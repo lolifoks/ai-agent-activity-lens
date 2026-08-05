@@ -1,48 +1,53 @@
 <?php
 /**
- * Uninstall AI Agent Activity Lens.
+ * Privacy functionality.
  *
  * @package AI_Agent_Activity_Lens
  */
 
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-global $wpdb;
+/**
+ * Adds suggested privacy-policy content for site administrators.
+ */
+function aal_add_privacy_policy_content() {
+	if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+		return;
+	}
 
-wp_clear_scheduled_hook( 'aal_cleanup_old_activity' );
+	$content = '<p class="privacy-policy-tutorial">'
+		. esc_html__(
+			'AI Agent Activity Lens records activity performed through WordPress Application Passwords.',
+			'ai-agent-activity-lens'
+		)
+		. '</p>';
 
-delete_option( 'aal_db_version' );
-delete_option( 'aal_requests_per_minute' );
-delete_option( 'aal_retention_days' );
+	$content .= '<p>'
+		. esc_html__(
+			'When an external tool accesses the WordPress REST API using an Application Password, we may store the WordPress user ID, Application Password UUID, request method, REST route, response status, request duration, source IP address, and timestamp.',
+			'ai-agent-activity-lens'
+		)
+		. '</p>';
 
-$wpdb->delete(
-	$wpdb->usermeta,
-	array(
-		'meta_key' => 'aal_agent_credentials',
-	),
-	array( '%s' )
-);
+	$content .= '<p>'
+		. esc_html__(
+			'This information is stored in the local WordPress database for security monitoring and troubleshooting. It is not transmitted to an external service by this plugin.',
+			'ai-agent-activity-lens'
+		)
+		. '</p>';
 
-$table_name = $wpdb->prefix . 'aal_activity';
+	$content .= '<p>'
+		. esc_html__(
+			'Activity records are retained for the period configured by a site administrator and are then deleted automatically.',
+			'ai-agent-activity-lens'
+		)
+		. '</p>';
 
-$wpdb->query(
-	"DROP TABLE IF EXISTS $table_name"
-);
-
-$transient_prefix         = '_transient_aal_ratelimit_';
-$transient_timeout_prefix = '_transient_timeout_aal_ratelimit_';
-
-$like_transient = $wpdb->esc_like( $transient_prefix ) . '%';
-$like_timeout   = $wpdb->esc_like( $transient_timeout_prefix ) . '%';
-
-$wpdb->query(
-	$wpdb->prepare(
-		"DELETE FROM {$wpdb->options}
-		WHERE option_name LIKE %s
-		OR option_name LIKE %s",
-		$like_transient,
-		$like_timeout
-	)
-);
+	wp_add_privacy_policy_content(
+		__( 'AI Agent Activity Lens', 'ai-agent-activity-lens' ),
+		wp_kses_post( $content )
+	);
+}
+add_action( 'admin_init', 'aal_add_privacy_policy_content', 10, 0 );

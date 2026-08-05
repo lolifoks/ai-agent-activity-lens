@@ -10,6 +10,7 @@
  * Text Domain: ai-agent-activity-lens
  */
 
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -25,6 +26,7 @@ require_once AAL_PLUGIN_DIR . 'includes/admin-dashboard.php';
 require_once AAL_PLUGIN_DIR . 'includes/settings.php';
 require_once AAL_PLUGIN_DIR . 'includes/user-profile.php';
 require_once AAL_PLUGIN_DIR . 'includes/retention.php';
+require_once AAL_PLUGIN_DIR . 'includes/privacy.php';
 
 register_activation_hook( __FILE__, 'aal_activate' );
 register_deactivation_hook( __FILE__, 'aal_deactivate' );
