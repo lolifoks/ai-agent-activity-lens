@@ -1,9 +1,13 @@
 <?php
+/**
+ * Plugin settings and settings-page rendering.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 /**
  * Registers plugin settings and fields.
  */

@@ -17,6 +17,8 @@ function aal_capture_start( $result, $server, $request ) {
 
 	$aal_request_start_time = microtime( true );
 
+	unset( $server, $request );
+
 	return $result;
 }
 add_filter( 'rest_pre_dispatch', 'aal_capture_start', 10, 3 );
@@ -51,11 +53,11 @@ function aal_log_request( $response, $server, $request ) {
 	if ( is_object( $response ) && method_exists( $response, 'get_status' ) ) {
 		$status = (int) $response->get_status();
 	}
-
+	$user_id = get_current_user_id();
 	$wpdb->insert(
 		$wpdb->prefix . 'aal_activity',
 		array(
-			'user_id'         => get_current_user_id() ?: null,
+			'user_id' => $user_id > 0 ? $user_id : null,
 			'credential_uuid' => $aal_authenticated_credential_uuid,
 			'method'          => $request->get_method(),
 			'route'           => $request->get_route(),

@@ -1,15 +1,16 @@
 <?php
 /**
  * Plugin Name: AI Agent Activity Lens
- * Description: Observability and guardrails for AI agents acting on WordPress through Application Passwords and the MCP Adapter. Logs REST requests, shows an admin dashboard, and rate-limits tagged credentials.
+ * Description: Observability and guardrails for AI agents acting on WordPress through Application Passwords and the MCP Adapter.
  * Version: 0.2.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Marija Lekić
  * License: GPL-2.0-or-later
  * Text Domain: ai-agent-activity-lens
+ *
+ * @package AI_Agent_Activity_Lens
  */
-
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
