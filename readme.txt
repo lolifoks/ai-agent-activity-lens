@@ -1,29 +1,59 @@
-=== AI Agent Activity Lens ===
-Contributors: marijalekic
-Tags: application passwords, rest api, ai agents, security, observability
-Requires at least: 6.0
-Requires PHP: 7.4
-Stable tag: 0.2.0
-License: GPL-2.0-or-later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+# AI Agent Activity Lens
 
-Observability and rate limiting for AI-agent credentials using WordPress Application Passwords.
+AI Agent Activity Lens is a WordPress security and observability plugin for monitoring REST API activity authenticated through Application Passwords.
 
-== Description ==
+## Why I built it
 
-AI Agent Activity Lens records REST API activity authenticated through WordPress Application Passwords. Administrators can tag credentials as AI-agent credentials, review their activity, filter the dashboard, apply per-credential rate limits, and automatically delete old activity records.
+WordPress Application Passwords allow external tools and AI agents to access the REST API, but WordPress does not provide a detailed per-credential activity log or rate limiting.
 
-This file is an initial placeholder and should be expanded before wordpress.org submission.
+This plugin adds visibility and guardrails without replacing WordPress authentication or the official MCP Adapter.
 
-== Installation ==
+## Features
 
-1. Upload the plugin folder to `/wp-content/plugins/`.
-2. Activate AI Agent Activity Lens.
-3. Create an Application Password for a WordPress user.
-4. Tag it as an AI-agent credential on the user profile.
-5. Configure rate limiting and retention under Settings, AI Activity Lens.
+- Logs REST requests authenticated through Application Passwords
+- Records credential, user, route, HTTP method, status, duration, IP, and timestamp
+- Lets administrators tag credentials as AI-agent credentials
+- Filters the dashboard to tagged credentials
+- Applies configurable per-credential rate limits
+- Returns HTTP 429 when a tagged credential exceeds its limit
+- Automatically removes activity older than the configured retention period
+- Uses WordPress capabilities, nonces, prepared queries, user meta, transients, and WP-Cron
 
-== Changelog ==
+## How it works
 
-= 0.2.0 =
-* Added Application Password activity logging, credential tagging, dashboard filtering, rate limiting, and retention.
+1. WordPress authenticates an Application Password.
+2. The plugin captures the credential UUID and user ID.
+3. REST requests using that credential are logged.
+4. Tagged AI-agent credentials can be filtered and rate-limited.
+5. Old activity rows are deleted daily according to the retention setting.
+
+## Screenshots
+
+Add screenshots here after capturing:
+
+1. Activity dashboard
+2. Tagged-only filter
+3. User-profile credential tagging
+4. Rate-limit and retention settings
+5. HTTP 429 response
+
+## Installation
+
+1. Download or clone the repository.
+2. Copy `ai-agent-activity-lens` into `wp-content/plugins/`.
+3. Activate AI Agent Activity Lens.
+4. Create an Application Password for a WordPress user.
+5. Mark the credential as an AI-agent credential from the user profile.
+6. Configure rate limiting under Settings > AI Activity Lens.
+
+Application Passwords require HTTPS, or a WordPress environment configured as `local`.
+
+## Development setup
+
+The plugin was developed against a local Docker Compose WordPress environment with MariaDB and WP-CLI.
+
+Example authenticated request:
+
+```bash
+curl -u "username:application-password" \
+  http://localhost:8080/wp-json/wp/v2/users/me
