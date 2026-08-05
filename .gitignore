@@ -1,1 +1,5 @@
-vendor
+/vendor/
+/includes/vendor/
+composer.lock
+.DS_Store
+.phpcs-cache
