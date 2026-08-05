@@ -120,7 +120,7 @@ function aal_save_agent_credentials_field( $user_id ) {
 		);
 	}
 
-	$application_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
+	$application_passwords  = WP_Application_Passwords::get_user_application_passwords( $user_id );
 	$valid_credential_uuids = array();
 
 	foreach ( $application_passwords as $application_password ) {
