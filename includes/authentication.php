@@ -1,4 +1,9 @@
 <?php
+/**
+ * Captures the Application Password used to authenticate REST requests.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

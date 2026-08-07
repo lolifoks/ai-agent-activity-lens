@@ -1,4 +1,9 @@
 <?php
+/**
+ * User profile UI for tagging Application Passwords as AI-agent credentials.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

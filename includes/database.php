@@ -1,4 +1,9 @@
 <?php
+/**
+ * Database schema management: creates the activity table on activation and migrates on version change.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

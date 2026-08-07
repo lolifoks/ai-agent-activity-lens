@@ -1,4 +1,9 @@
 <?php
+/**
+ * Scheduled cleanup of activity records older than the configured retention period.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,10 +43,11 @@ function aal_cleanup_old_activity() {
 
 	$table_name = $wpdb->prefix . 'aal_activity';
 
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-time daily cleanup on a log table, caching would be counterproductive.
 	$wpdb->query(
 		$wpdb->prepare(
-			"DELETE FROM $table_name
-			WHERE requested_at < %s",
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $table_name is $wpdb->prefix concatenation, not user input.
+			"DELETE FROM $table_name WHERE requested_at < %s",
 			$cutoff
 		)
 	);

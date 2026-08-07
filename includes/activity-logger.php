@@ -1,4 +1,9 @@
 <?php
+/**
+ * Logs REST requests authenticated with Application Passwords.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -54,10 +59,11 @@ function aal_log_request( $response, $server, $request ) {
 		$status = (int) $response->get_status();
 	}
 	$user_id = get_current_user_id();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- activity log inserts are the point of this plugin; caching would defeat it.
 	$wpdb->insert(
 		$wpdb->prefix . 'aal_activity',
 		array(
-			'user_id' => $user_id > 0 ? $user_id : null,
+			'user_id'         => $user_id > 0 ? $user_id : null,
 			'credential_uuid' => $aal_authenticated_credential_uuid,
 			'method'          => $request->get_method(),
 			'route'           => $request->get_route(),

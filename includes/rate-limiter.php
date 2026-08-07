@@ -1,4 +1,9 @@
 <?php
+/**
+ * Per-credential rate limiting for tagged AI-agent Application Passwords.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,6 +46,7 @@ function aal_enforce_rate_limit( $result, $server, $request ) {
 	global $aal_authenticated_credential_uuid;
 	global $aal_authenticated_user_id;
 
+	unset( $server, $request );
 	if ( null !== $result ) {
 		return $result;
 	}

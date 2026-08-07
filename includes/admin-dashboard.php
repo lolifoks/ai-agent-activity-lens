@@ -1,4 +1,9 @@
 <?php
+/**
+ * Admin dashboard displaying logged REST activity.
+ *
+ * @package AI_Agent_Activity_Lens
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -28,6 +33,8 @@ add_action( 'admin_menu', 'aal_register_admin_menu', 10, 0 );
 function aal_get_tagged_credential_uuids() {
 	global $wpdb;
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
 	$stored_values = $wpdb->get_col(
 		$wpdb->prepare(
 			"SELECT meta_value
@@ -36,6 +43,8 @@ function aal_get_tagged_credential_uuids() {
 			'aal_agent_credentials'
 		)
 	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 	$credential_uuids = array();
 
@@ -74,14 +83,18 @@ function aal_render_activity_page() {
 	$table_name = $wpdb->prefix . 'aal_activity';
 	$per_page   = 20;
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- These GET parameters only control read-only dashboard display.
 	$current_page = isset( $_GET['aal_page'] )
 		? max( 1, absint( $_GET['aal_page'] ) )
 		: 1;
 
 	$only_tagged = (
 		isset( $_GET['aal_only_tagged'] )
-		&& '1' === sanitize_text_field( wp_unslash( $_GET['aal_only_tagged'] ) )
+		&& '1' === sanitize_text_field(
+			wp_unslash( $_GET['aal_only_tagged'] )
+		)
 	);
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	$offset       = ( $current_page - 1 ) * $per_page;
 	$where_clause = '';
@@ -103,20 +116,27 @@ function aal_render_activity_page() {
 		}
 	}
 
-	$count_sql = "SELECT COUNT(*)
-		FROM $table_name
-		$where_clause";
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses the trusted WordPress prefix and the WHERE clause contains only internally generated placeholders.
+	$count_sql = "SELECT COUNT(*) FROM $table_name $where_clause";
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.NoCaching
+	// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- SQL structure and placeholders are generated internally, and all values are passed to prepare().
 	if ( empty( $query_values ) ) {
 		$total_items = (int) $wpdb->get_var( $count_sql );
 	} else {
 		$total_items = (int) $wpdb->get_var(
-			$wpdb->prepare( $count_sql, $query_values )
+			$wpdb->prepare(
+				$count_sql,
+				$query_values
+			)
 		);
 	}
+	// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 	$total_pages = (int) ceil( $total_items / $per_page );
 
+	// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name uses the trusted WordPress prefix and the WHERE clause contains only internally generated placeholders.
 	$rows_sql = "SELECT
 			id,
 			user_id,
@@ -136,10 +156,17 @@ function aal_render_activity_page() {
 	$rows_query_values[] = $per_page;
 	$rows_query_values[] = $offset;
 
+	// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- SQL structure and placeholders are generated internally, and all values are passed to prepare().
 	$rows = $wpdb->get_results(
-		$wpdb->prepare( $rows_sql, $rows_query_values ),
+		$wpdb->prepare(
+			$rows_sql,
+			$rows_query_values
+		),
 		ARRAY_A
 	);
+	// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.NoCaching
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 	$showing_count = count( $rows );
 	?>
